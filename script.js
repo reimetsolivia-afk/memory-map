@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykZtq1Wd4bt7huIs5DgKApMpt7cZRlQRqY0OFaOOG8qrgRCARtl2D4yxB7Kp05ih4K/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyT7FmeWH4xVgPjtIYVFV50dnkdfPf71Zo5sgAPZ_IIzY6vc4DDPPiJhwnmmIlrIfDJ/exec";
 
 // Create the map
 
