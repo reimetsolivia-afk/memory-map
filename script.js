@@ -1,3 +1,5 @@
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykZtq1Wd4bt7huIs5DgKApMpt7cZRlQRqY0OFaOOG8qrgRCARtl2D4yxB7Kp05ih4K/exec";
+
 // Create the map
 
 const map = L.map("map").setView([59.437, 24.753], 12);
@@ -59,5 +61,66 @@ map.on("click", function(event) {
         .setLatLng(event.latlng)
         .setContent(popupContent)
         .openOn(map);
+
+});
+
+document.addEventListener("click", function(event) {
+
+    if (event.target.id !== "add-place") {
+        return;
+    }
+
+
+    const title =
+        document.getElementById("place-name").value;
+
+    const comment =
+        document.getElementById("place-comment").value;
+
+    const author =
+        document.getElementById("place-author").value;
+
+
+    // Get the coordinates of the popup
+
+    const popup = map._popup;
+
+    const latitude =
+        popup.getLatLng().lat;
+
+    const longitude =
+        popup.getLatLng().lng;
+
+
+    // Create the data we want to send
+
+    const parameters =
+        "latitude=" + encodeURIComponent(latitude) +
+        "&longitude=" + encodeURIComponent(longitude) +
+        "&title=" + encodeURIComponent(title) +
+        "&comment=" + encodeURIComponent(comment) +
+        "&author=" + encodeURIComponent(author);
+
+
+    // Send the data to Google Apps Script
+
+    fetch(SCRIPT_URL + "?" + parameters)
+        .then(response => response.text())
+        .then(result => {
+
+            console.log(result);
+
+            alert("Memory added!");
+
+            map.closePopup();
+
+        })
+        .catch(error => {
+
+            console.error("Error:", error);
+
+            alert("Something went wrong.");
+
+        });
 
 });
