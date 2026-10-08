@@ -2,49 +2,6 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyT7FmeWH4xVgPjtIYVF
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQiepjUhDQl3nTI_NkU6b88_P-_nb_Rg4k1gzlLjwMqkxdzD1DV4z3zCkkVjtFKx_UM2SZiww1FyZKT/pub?gid=0&single=true&output=csv";
 
-//code that reads the Sheet
-fetch(SHEET_URL)
-    .then(response => response.text())
-    .then(csv => {
-
-        const rows = csv.trim().split("\n");
-
-        // Remove the header row
-        rows.shift();
-
-        rows.forEach(row => {
-
-            const values = row.split(",");
-
-            const latitude = parseFloat(values[0]);
-            const longitude = parseFloat(values[1]);
-
-            const title = values[2];
-            const comment = values[3];
-            const author = values[4];
-            const date = values[5];
-
-            // Create a marker
-            const marker = L.marker([
-                latitude,
-                longitude
-            ]).addTo(map);
-
-            // Add information to the marker
-            marker.bindPopup(
-                "<h3>" + title + "</h3>" +
-                "<p>" + comment + "</p>" +
-                "<p><em>— " + author + "</em></p>" +
-                "<small>" + date + "</small>"
-            );
-
-        });
-
-    })
-    .catch(error => {
-        console.error("Could not load Google Sheet:", error);
-    });
-
 
 // Create the map
 
@@ -61,6 +18,64 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 
+// Read the Google Sheet
+
+fetch(SHEET_URL)
+    .then(response => response.text())
+    .then(csv => {
+
+        const rows = csv.trim().split("\n");
+
+        // Remove the header row
+
+        rows.shift();
+
+
+        // Create a marker for each row
+
+        rows.forEach(row => {
+
+            const values = row.split(",");
+
+            const latitude = parseFloat(values[0]);
+            const longitude = parseFloat(values[1]);
+
+            const title = values[2];
+            const comment = values[3];
+            const author = values[4];
+            const date = values[5];
+
+
+            // Create marker
+
+            const marker = L.marker([
+                latitude,
+                longitude
+            ]).addTo(map);
+
+
+            // Add popup
+
+            marker.bindPopup(
+                "<h3>" + title + "</h3>" +
+                "<p>" + comment + "</p>" +
+                "<p><em>— " + author + "</em></p>" +
+                "<small>" + date + "</small>"
+            );
+
+        });
+
+    })
+    .catch(error => {
+
+        console.error(
+            "Could not load Google Sheet:",
+            error
+        );
+
+    });
+
+
 // Listen for clicks on the map
 
 map.on("click", function(event) {
@@ -73,8 +88,11 @@ map.on("click", function(event) {
         "<h3>Add a memory</h3>" +
 
         "<p>" +
-        "<strong>Latitude:</strong> " + latitude.toFixed(5) + "<br>" +
-        "<strong>Longitude:</strong> " + longitude.toFixed(5) +
+        "<strong>Latitude:</strong> " +
+        latitude.toFixed(5) +
+        "<br>" +
+        "<strong>Longitude:</strong> " +
+        longitude.toFixed(5) +
         "</p>" +
 
         "<label>" +
@@ -110,6 +128,9 @@ map.on("click", function(event) {
 
 });
 
+
+// Listen for the Add place button
+
 document.addEventListener("click", function(event) {
 
     if (event.target.id !== "add-place") {
@@ -129,7 +150,7 @@ document.addEventListener("click", function(event) {
         document.getElementById("place-author").value;
 
 
-    // Get the coordinates of the clicked location
+    // Get coordinates of the clicked location
 
     const popup = map._popup;
 
@@ -140,7 +161,7 @@ document.addEventListener("click", function(event) {
         popup.getLatLng().lng;
 
 
-    // Create the form that sends data to Google Apps Script
+    // Create form for Google Apps Script
 
     const form = document.createElement("form");
 
@@ -148,6 +169,8 @@ document.addEventListener("click", function(event) {
     form.action = SCRIPT_URL;
     form.target = "hiddenFrame";
 
+
+    // Function for adding hidden form fields
 
     function addField(name, value) {
 
@@ -161,12 +184,16 @@ document.addEventListener("click", function(event) {
     }
 
 
+    // Add the memory information
+
     addField("latitude", latitude);
     addField("longitude", longitude);
     addField("title", title);
     addField("comment", comment);
     addField("author", author);
 
+
+    // Send the form
 
     document.body.appendChild(form);
 
@@ -175,18 +202,20 @@ document.addEventListener("click", function(event) {
     form.remove();
 
 
-// Close the form popup
+    // Close the form popup
 
-map.closePopup();
+    map.closePopup();
 
 
-// Tell the user that the memory was saved
+    // Tell the user the memory was saved
 
-L.popup()
-    .setLatLng([latitude, longitude])
-    .setContent(
-        "<h3>Memory saved 🌿</h3>" +
-        "<p>Your memory has been added.</p>" +
-        "<p><em>Refresh the page to see it on the map.</em></p>"
-    )
-    .openOn(map);
+    L.popup()
+        .setLatLng([latitude, longitude])
+        .setContent(
+            "<h3>Memory saved 🌿</h3>" +
+            "<p>Your memory has been added.</p>" +
+            "<p><em>Refresh the page to see it on the map.</em></p>"
+        )
+        .openOn(map);
+
+});
