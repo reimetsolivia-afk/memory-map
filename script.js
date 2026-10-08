@@ -20,12 +20,12 @@ enterButton.addEventListener("click", function() {
         return;
     }
 
-    // For now, let the map load after a code is entered.
+    // the will map load after a code is entered.
     // The Apps Script will verify the code when a memory is saved.
     login.style.display = "none";
     site.style.display = "block";
 
-    // Leaflet needs to know that the map container is now visible
+    // tells Leaflet that the map container is now visible
     map.invalidateSize();
 });
 
