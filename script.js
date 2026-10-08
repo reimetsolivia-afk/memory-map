@@ -4,10 +4,13 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyT7FmeWH4xVgPjtIYVF
 // Published Google Sheet CSV URL
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQiepjUhDQl3nTI_NkU6b88_P-_nb_Rg4k1gzlLjwMqkxdzD1DV4z3zCkkVjtFKx_UM2SZiww1FyZKT/pub?gid=0&single=true&output=csv";
 
+// Store all memory locations
+const memories = [];
 
-// --------------------------------------------------
+// Store the route currently displayed on the map
+let roadtripRoute = null;
+
 // CREATE THE MAP
-// --------------------------------------------------
 
 const map = L.map("map").setView(
     [59.437, 24.753],
@@ -15,9 +18,7 @@ const map = L.map("map").setView(
 );
 
 
-// --------------------------------------------------
 // ADD OPENSTREETMAP TILES
-// --------------------------------------------------
 
 L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -30,9 +31,7 @@ L.tileLayer(
 ).addTo(map);
 
 
-// --------------------------------------------------
 // READ DATA FROM GOOGLE SHEET
-// --------------------------------------------------
 
 fetch(SHEET_URL)
 
@@ -41,9 +40,7 @@ fetch(SHEET_URL)
     .then(csv => {
 
 
-        // --------------------------------------------------
         // CSV PARSER
-        // --------------------------------------------------
 
         // This allows comments to contain commas
         // and line breaks.
@@ -193,9 +190,8 @@ fetch(SHEET_URL)
         rows.shift();
 
 
-        // --------------------------------------------------
         // CREATE A MARKER FOR EACH ROW
-        // --------------------------------------------------
+
 
         rows.forEach(row => {
 
@@ -252,20 +248,21 @@ fetch(SHEET_URL)
             const date =
                 row[5] || "";
 
-
-            // --------------------------------------------------
             // CREATE MARKER
-            // --------------------------------------------------
 
             const marker = L.marker([
                 latitude,
                 longitude
             ]).addTo(map);
 
+            memories.push({
+                latitude: latitude,
+                longitude: longitude
+            });
 
-            // --------------------------------------------------
+
             // ADD POPUP
-            // --------------------------------------------------
+
 
             marker.bindPopup(
 
@@ -292,9 +289,7 @@ fetch(SHEET_URL)
     })
 
 
-    // --------------------------------------------------
     // ERROR HANDLING
-    // --------------------------------------------------
 
     .catch(error => {
 
@@ -306,9 +301,7 @@ fetch(SHEET_URL)
     });
 
 
-// --------------------------------------------------
 // LISTEN FOR MAP CLICKS
-// --------------------------------------------------
 
 map.on("click", function (event) {
 
@@ -322,9 +315,7 @@ map.on("click", function (event) {
         event.latlng.lng;
 
 
-    // --------------------------------------------------
     // CREATE POPUP FORM
-    // --------------------------------------------------
 
     const popupContent =
 
@@ -401,9 +392,8 @@ map.on("click", function (event) {
 });
 
 
-// --------------------------------------------------
+
 // LISTEN FOR THE "ADD PLACE" BUTTON
-// --------------------------------------------------
 
 document.addEventListener(
     "click",
@@ -422,9 +412,8 @@ document.addEventListener(
         }
 
 
-        // --------------------------------------------------
         // GET INFORMATION FROM THE FORM
-        // --------------------------------------------------
+
 
         const title =
             document.getElementById(
@@ -444,9 +433,8 @@ document.addEventListener(
             ).value;
 
 
-        // --------------------------------------------------
         // GET COORDINATES
-        // --------------------------------------------------
+
 
         const popup = map._popup;
 
@@ -459,9 +447,7 @@ document.addEventListener(
             popup.getLatLng().lng;
 
 
-        // --------------------------------------------------
         // CREATE FORM FOR GOOGLE APPS SCRIPT
-        // --------------------------------------------------
 
         const form =
             document.createElement("form");
@@ -473,10 +459,7 @@ document.addEventListener(
 
         form.target = "hiddenFrame";
 
-
-        // --------------------------------------------------
         // FUNCTION FOR ADDING HIDDEN FIELDS
-        // --------------------------------------------------
 
         function addField(name, value) {
 
@@ -496,9 +479,8 @@ document.addEventListener(
         }
 
 
-        // --------------------------------------------------
         // ADD MEMORY INFORMATION
-        // --------------------------------------------------
+
 
         addField(
             "latitude",
@@ -529,10 +511,8 @@ document.addEventListener(
             author
         );
 
-
-        // --------------------------------------------------
         // SEND THE FORM
-        // --------------------------------------------------
+    
 
         document.body.appendChild(form);
 
@@ -540,17 +520,13 @@ document.addEventListener(
 
         form.remove();
 
-
-        // --------------------------------------------------
+    
         // CLOSE THE FORM POPUP
-        // --------------------------------------------------
 
         map.closePopup();
 
 
-        // --------------------------------------------------
-        // SHOW CONFIRMATION
-        // --------------------------------------------------
+
 
         L.popup()
 
@@ -581,3 +557,173 @@ document.addEventListener(
 
     }
 );
+
+// CREATE ROADTRIP
+
+document.getElementById("roadtrip-button")
+    .addEventListener("click", function () {
+
+        // We need at least two locations to create a route.
+
+        if (memories.length < 2) {
+
+            alert(
+                "You need at least two memories to create a roadtrip."
+            );
+
+            return;
+        }
+
+        // CREATE OSRM COORDINATE STRING
+
+        // OSRM expects coordinates in this format:
+        // longitude,latitude;longitude,latitude
+
+        const coordinates = memories
+            .map(memory =>
+                memory.longitude +
+                "," +
+                memory.latitude
+            )
+            .join(";");
+
+
+        // CREATE OSRM URL
+ 
+        const routeURL =
+            "https://router.project-osrm.org/route/v1/driving/" +
+            coordinates +
+            "?overview=full&geometries=geojson";
+
+
+        // ASK OSRM FOR A ROUTE
+
+        fetch(routeURL)
+
+            .then(response => {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "OSRM request failed."
+                    );
+
+                }
+
+                return response.json();
+
+            })
+
+
+            .then(data => {
+
+                // Check that OSRM found a route
+
+                if (
+                    !data.routes ||
+                    data.routes.length === 0
+                ) {
+
+                    throw new Error(
+                        "No route was found."
+                    );
+
+                }
+
+
+                // Get the first route
+
+                const route =
+                    data.routes[0];
+
+
+                // REMOVE OLD ROUTE
+
+                if (roadtripRoute) {
+
+                    map.removeLayer(
+                        roadtripRoute
+                    );
+
+                }
+
+
+                // DRAW THE ROUTE
+
+                roadtripRoute =
+                    L.geoJSON(
+                        route.geometry
+                    ).addTo(map);
+
+    
+                // ZOOM TO THE ROUTE
+
+
+                map.fitBounds(
+                    roadtripRoute.getBounds()
+                );
+
+
+                // SHOW ROUTE INFORMATION
+
+
+                const distance =
+                    (route.distance / 1000)
+                    .toFixed(1);
+
+
+                const duration =
+                    Math.round(
+                        route.duration / 60
+                    );
+
+
+                L.popup()
+
+                    .setLatLng(
+                        roadtripRoute
+                            .getBounds()
+                            .getCenter()
+                    )
+
+                    .setContent(
+
+                        "<h3>🚗 Roadtrip</h3>" +
+
+                        "<p>" +
+
+                        "<strong>Distance:</strong> " +
+                        distance +
+                        " km" +
+
+                        "<br>" +
+
+                        "<strong>Estimated driving time:</strong> " +
+                        duration +
+                        " min" +
+
+                        "</p>"
+
+                    )
+
+                    .openOn(map);
+
+            })
+
+
+            // ERROR HANDLING
+     
+            .catch(error => {
+
+                console.error(
+                    "Could not create roadtrip:",
+                    error
+                );
+
+                alert(
+                    "Could not create the roadtrip."
+                );
+
+            });
+
+    });
