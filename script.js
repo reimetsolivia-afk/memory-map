@@ -177,29 +177,29 @@ document.addEventListener("click", function(event) {
 
     // Create the new marker immediately
 
-    const marker = L.marker([
-        latitude,
-        longitude
-    ]).addTo(map);
+const marker = L.marker([
+    latitude,
+    longitude
+]).addTo(map);
 
 
-    // Create the popup for the new marker
+// Create the popup for the new marker
 
-    marker.bindPopup(
-        "<h3>" + title + "</h3>" +
-        "<p>" + comment + "</p>" +
-        "<p><em>Added by " + author + "</em></p>" +
-        "<small>Just now</small>"
-    );
-
-
-    // Show the new marker's popup
-
-    marker.openPopup();
+marker.bindPopup(
+    "<h3>" + title + "</h3>" +
+    "<p>" + comment + "</p>" +
+    "<p><em>Added by " + author + "</em></p>" +
+    "<small>Just now</small>"
+);
 
 
-    // Close the original form popup
+// Close the original form popup
 
-    map.closePopup();
+map.closePopup();
 
+
+// Show the new marker's popup
+
+marker.openPopup();
+    
 });
