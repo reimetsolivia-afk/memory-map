@@ -129,7 +129,7 @@ fetch(SHEET_URL)
             // Add popup
             marker.bindPopup(
                 "<h3>" + title + "</h3>" +
-                "<p>" + comment + "</p>" +
+                "<p style='white-space: pre-line;'>" + comment + "</p>" +
                 "<p><em>— " + author + "</em></p>" +
                 "<small>" + date + "</small>"
             );
