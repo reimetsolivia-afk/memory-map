@@ -7,13 +7,44 @@ fetch(SHEET_URL)
     .then(response => response.text())
     .then(csv => {
 
-        console.log("Google Sheet data:");
-        console.log(csv);
+        const rows = csv.trim().split("\n");
+
+        // Remove the header row
+        rows.shift();
+
+        rows.forEach(row => {
+
+            const values = row.split(",");
+
+            const latitude = parseFloat(values[0]);
+            const longitude = parseFloat(values[1]);
+
+            const title = values[2];
+            const comment = values[3];
+            const author = values[4];
+            const date = values[5];
+
+            // Create a marker
+            const marker = L.marker([
+                latitude,
+                longitude
+            ]).addTo(map);
+
+            // Add information to the marker
+            marker.bindPopup(
+                "<h3>" + title + "</h3>" +
+                "<p>" + comment + "</p>" +
+                "<p><em>Added by " + author + "</em></p>" +
+                "<small>" + date + "</small>"
+            );
+
+        });
 
     })
     .catch(error => {
         console.error("Could not load Google Sheet:", error);
     });
+
 
 // Create the map
 
