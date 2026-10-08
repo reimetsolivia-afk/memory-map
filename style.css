@@ -175,23 +175,3 @@ button:hover {
 .leaflet-control-zoom a:hover {
     background: #dce7d8 !important;
 }
-
-#site {
-    display: none;
-}
-
-#login {
-    max-width: 400px;
-    margin: 120px auto;
-    padding: 40px;
-    text-align: center;
-}
-
-#login input {
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-#login-message {
-    color: #a14b4b;
-}
