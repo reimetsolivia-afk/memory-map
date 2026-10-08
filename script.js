@@ -109,22 +109,19 @@ document.addEventListener("click", function(event) {
 
     // Send the data to Google Apps Script
 
-    fetch(SCRIPT_URL + "?" + parameters, {
-        mode: "no-cors"
-    })
-    .then(function() {
-
-        alert("Memory sent!");
-
-        map.closePopup();
-
-    })
-    .catch(function(error) {
-
-        console.error("Error:", error);
-
-        alert("Something went wrong.");
-
-    });
+    const requestURL = SCRIPT_URL + "?" + parameters;
+    
+    const iframe = document.createElement("iframe");
+    
+    iframe.style.display = "none";
+    
+    iframe.src = requestURL;
+    
+    document.body.appendChild(iframe);
+    
+    
+    alert("Memory sent!");
+    
+    map.closePopup();
 
 });
