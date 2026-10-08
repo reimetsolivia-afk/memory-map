@@ -34,36 +34,45 @@ fetch(SHEET_URL)
         // Create a marker for each row
 
         rows.forEach(row => {
-
-            const values = row.split(",");
-
-            const latitude = parseFloat(values[0]);
-            const longitude = parseFloat(values[1]);
-
-            const title = values[2];
-            const comment = values[3];
-            const author = values[4];
-            const date = values[5];
-
-
-            // Create marker
-
-            const marker = L.marker([
-                latitude,
-                longitude
-            ]).addTo(map);
-
-
-            // Add popup
-
-            marker.bindPopup(
-                "<h3>" + title + "</h3>" +
-                "<p>" + comment + "</p>" +
-                "<p><em>— " + author + "</em></p>" +
-                "<small>" + date + "</small>"
-            );
-
-        });
+    
+        const values = row.split(",");
+    
+        const latitude = parseFloat(values[0]);
+        const longitude = parseFloat(values[1]);
+    
+    
+        // Skip rows that do not contain valid coordinates
+    
+        if (isNaN(latitude) || isNaN(longitude)) {
+            console.warn("Skipping invalid row:", row);
+            return;
+        }
+    
+    
+        const title = values[2] || "";
+        const comment = values[3] || "";
+        const author = values[4] || "";
+        const date = values[5] || "";
+    
+    
+        // Create marker
+    
+        const marker = L.marker([
+            latitude,
+            longitude
+        ]).addTo(map);
+    
+    
+        // Add popup
+    
+        marker.bindPopup(
+            "<h3>" + title + "</h3>" +
+            "<p>" + comment + "</p>" +
+            "<p><em>— " + author + "</em></p>" +
+            "<small>" + date + "</small>"
+        );
+    
+    });
 
     })
     .catch(error => {
