@@ -2,6 +2,32 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyT7FmeWH4xVgPjtIYVF
 
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQiepjUhDQl3nTI_NkU6b88_P-_nb_Rg4k1gzlLjwMqkxdzD1DV4z3zCkkVjtFKx_UM2SZiww1FyZKT/pub?gid=0&single=true&output=csv";
 
+let invitationCode = "";
+
+const login = document.getElementById("login");
+const site = document.getElementById("site");
+const codeInput = document.getElementById("invite-code");
+const enterButton = document.getElementById("enter-map");
+const loginMessage = document.getElementById("login-message");
+
+
+enterButton.addEventListener("click", function() {
+
+    invitationCode = codeInput.value.trim();
+
+    if (invitationCode === "") {
+        loginMessage.textContent = "Please enter an invitation code.";
+        return;
+    }
+
+    // For now, let the map load after a code is entered.
+    // The Apps Script will verify the code when a memory is saved.
+    login.style.display = "none";
+    site.style.display = "block";
+
+    // Leaflet needs to know that the map container is now visible
+    map.invalidateSize();
+});
 
 // Create the map
 
