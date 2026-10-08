@@ -104,23 +104,20 @@ document.addEventListener("click", function(event) {
 
     // Send the data to Google Apps Script
 
-    fetch(SCRIPT_URL + "?" + parameters)
-        .then(response => response.text())
-        .then(result => {
-
-            console.log(result);
-
-            alert("Memory added!");
-
-            map.closePopup();
-
-        })
-        .catch(error => {
-
-            console.error("Error:", error);
-
-            alert("Something went wrong.");
-
-        });
-
-});
+      fetch(SCRIPT_URL + "?" + parameters, {
+        mode: "no-cors"
+    })
+    .then(() => {
+    
+        alert("Memory sent!");
+    
+        map.closePopup();
+    
+    })
+    .catch(error => {
+    
+        console.error("Error:", error);
+    
+        alert("Something went wrong.");
+    
+    });
