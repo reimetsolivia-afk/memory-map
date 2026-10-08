@@ -175,3 +175,10 @@ button:hover {
 .leaflet-control-zoom a:hover {
     background: #dce7d8 !important;
 }
+
+#roadtrip-button {
+    display: block;
+    margin: 0 auto 25px;
+    padding: 11px 20px;
+    font-size: 15px;
+}
