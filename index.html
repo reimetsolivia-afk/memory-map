@@ -20,51 +20,34 @@
 </head>
 
 
-    <body>
-    
-        <div id="login">
-            <h2>Memory Map</h2>
-    
-            <p>Enter your invitation code to continue.</p>
-    
-            <input
-                type="text"
-                id="invite-code"
-                placeholder="Invitation code"
-            >
-    
-            <button id="enter-map">
-                Enter
-            </button>
-    
-            <p id="login-message"></p>
-        </div>
-    
-    
-        <div id="site">
-    
-            <header>
-                <h1>Memory Map</h1>
-                <p>Places that mean something to us.</p>
-            </header>
-    
-            <main>
-                <p>Click anywhere on the map to add a memory.</p>
-                <div id="map"></div>
-            </main>
-    
-        </div>
-    
-    
-        <iframe
-            name="hiddenFrame"
-            style="display: none;">
-        </iframe>
-    
-    
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <script src="script.js"></script>
-    
-    </body>
+  <body>
+    <header>
+        <h1>Memory Map</h1>
+        <p>
+            Places that mean something to us.
+        </p>
+    </header>
 
+    <main>
+        <p>
+            Click anywhere on the map to add a memory.
+        </p>
+        <div id="map"></div>
+    </main>
+
+    <!-- Hidden iframe used when sending data to Google Apps Script -->
+    <iframe
+        name="hiddenFrame"
+        style="display: none;"
+    ></iframe>
+
+    <!-- Leaflet JavaScript -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
+    <!-- Our own JavaScript -->
+    <script src="script.js"></script>
+
+</body>
 </html>
