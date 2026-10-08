@@ -175,31 +175,18 @@ document.addEventListener("click", function(event) {
     form.remove();
 
 
-    // Create the new marker immediately
-
-const marker = L.marker([
-    latitude,
-    longitude
-]).addTo(map);
-
-
-// Create the popup for the new marker
-
-marker.bindPopup(
-    "<h3>" + title + "</h3>" +
-    "<p>" + comment + "</p>" +
-    "<p><em>— " + author + "</em></p>" +
-    "<small>" + date + "</small>"
-);
-
-
-// Close the original form popup
+// Close the form popup
 
 map.closePopup();
 
 
-// Show the new marker's popup
+// Tell the user that the memory was saved
 
-marker.openPopup();
-    
-});
+L.popup()
+    .setLatLng([latitude, longitude])
+    .setContent(
+        "<h3>Memory saved 🌿</h3>" +
+        "<p>Your memory has been added.</p>" +
+        "<p><em>Refresh the page to see it on the map.</em></p>"
+    )
+    .openOn(map);
