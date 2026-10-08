@@ -64,23 +64,64 @@ map.on("click", function(event) {
 
 });
 
-
 document.addEventListener("click", function(event) {
 
     if (event.target.id !== "add-place") {
         return;
     }
 
-    const testURL =
-        SCRIPT_URL +
-        "?latitude=59.437" +
-        "&longitude=24.753" +
-        "&title=BrowserTest" +
-        "&comment=TestingFromBrowser" +
-        "&author=Olivia";
+    const title =
+        document.getElementById("place-name").value;
 
-    console.log("Sending request to:", testURL);
+    const comment =
+        document.getElementById("place-comment").value;
 
-    window.open(testURL, "_blank");
+    const author =
+        document.getElementById("place-author").value;
+
+    const popup = map._popup;
+
+    const latitude =
+        popup.getLatLng().lat;
+
+    const longitude =
+        popup.getLatLng().lng;
+
+
+    const form = document.createElement("form");
+
+    form.method = "GET";
+    form.action = SCRIPT_URL;
+    form.target = "hiddenFrame";
+
+
+    function addField(name, value) {
+
+        const input = document.createElement("input");
+
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+
+        form.appendChild(input);
+    }
+
+
+    addField("latitude", latitude);
+    addField("longitude", longitude);
+    addField("title", title);
+    addField("comment", comment);
+    addField("author", author);
+
+
+    document.body.appendChild(form);
+
+    form.submit();
+
+    form.remove();
+
+    alert("Memory added!");
+
+    map.closePopup();
 
 });
