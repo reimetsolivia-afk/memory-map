@@ -85,7 +85,7 @@ main > p {
 }
 
 .leaflet-popup-content {
-    width: 340px !important;
+    width: 300px !important;
     margin: 16px 18px;
     font-family: Georgia, "Times New Roman", serif;
     color: #29382d;
