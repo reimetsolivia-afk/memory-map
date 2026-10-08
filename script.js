@@ -17,8 +17,6 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 }).addTo(map);
 
-
-// Read the Google Sheet
 // Read the Google Sheet
 fetch(SHEET_URL)
     .then(response => response.text())
