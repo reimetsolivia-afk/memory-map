@@ -188,8 +188,8 @@ const marker = L.marker([
 marker.bindPopup(
     "<h3>" + title + "</h3>" +
     "<p>" + comment + "</p>" +
-    "<p><em>Added by " + author + "</em></p>" +
-    "<small>Just now</small>"
+    "<p><em>— " + author + "</em></p>" +
+    "<small>" + date + "</small>"
 );
 
 
