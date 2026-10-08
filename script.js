@@ -65,63 +65,22 @@ map.on("click", function(event) {
 });
 
 
-// Listen for clicks on the "Add place" button
-
 document.addEventListener("click", function(event) {
 
     if (event.target.id !== "add-place") {
         return;
     }
 
+    const testURL =
+        SCRIPT_URL +
+        "?latitude=59.437" +
+        "&longitude=24.753" +
+        "&title=BrowserTest" +
+        "&comment=TestingFromBrowser" +
+        "&author=Olivia";
 
-    // Get the information from the form
+    console.log("Sending request to:", testURL);
 
-    const title =
-        document.getElementById("place-name").value;
-
-    const comment =
-        document.getElementById("place-comment").value;
-
-    const author =
-        document.getElementById("place-author").value;
-
-
-    // Get the coordinates from the popup
-
-    const popup = map._popup;
-
-    const latitude =
-        popup.getLatLng().lat;
-
-    const longitude =
-        popup.getLatLng().lng;
-
-
-    // Create the URL parameters
-
-    const parameters =
-        "latitude=" + encodeURIComponent(latitude) +
-        "&longitude=" + encodeURIComponent(longitude) +
-        "&title=" + encodeURIComponent(title) +
-        "&comment=" + encodeURIComponent(comment) +
-        "&author=" + encodeURIComponent(author);
-
-
-    // Send the data to Google Apps Script
-
-    const requestURL = SCRIPT_URL + "?" + parameters;
-    
-    const iframe = document.createElement("iframe");
-    
-    iframe.style.display = "none";
-    
-    iframe.src = requestURL;
-    
-    document.body.appendChild(iframe);
-    
-    
-    alert("Memory sent!");
-    
-    map.closePopup();
+    window.open(testURL, "_blank");
 
 });
