@@ -1,8 +1,9 @@
 // Google Apps Script URL
-const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyT7FmeWH4xVgPjtIYVFV50dnkdfPf71Zo5sgAPZ_IIzY6vc4DDPPiJhwnmmIlrIfDJ/exec";
 
 // Published Google Sheet CSV URL
-const SHEET_URL = "YOUR_PUBLISHED_SHEET_CSV_URL";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQiepjUhDQl3nTI_NkU6b88_P-_nb_Rg4k1gzlLjwMqkxdzD1DV4z3zCkkVjtFKx_UM2SZiww1FyZKT/pub?gid=0&single=true&output=csv
+";
 
 
 // --------------------------------------------------
