@@ -4,47 +4,6 @@ const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL";
 // Published Google Sheet CSV URL
 const SHEET_URL = "YOUR_PUBLISHED_SHEET_CSV_URL";
 
-// Store the invitation code entered by the visitor
-let invitationCode = "";
-
-
-// Get the login elements
-const login = document.getElementById("login");
-const site = document.getElementById("site");
-const codeInput = document.getElementById("invite-code");
-const enterButton = document.getElementById("enter-map");
-const loginMessage = document.getElementById("login-message");
-
-
-// --------------------------------------------------
-// INVITATION CODE
-// --------------------------------------------------
-
-enterButton.addEventListener("click", function () {
-
-    // Get the code entered by the visitor
-    invitationCode = codeInput.value.trim();
-
-    // Don't continue if nothing was entered
-    if (invitationCode === "") {
-
-        loginMessage.textContent =
-            "Please enter an invitation code.";
-
-        return;
-    }
-
-
-    // Show the map
-    login.style.display = "none";
-    site.style.display = "block";
-
-
-    // Tell Leaflet that the map is now visible
-    map.invalidateSize();
-
-});
-
 
 // --------------------------------------------------
 // CREATE THE MAP
@@ -87,20 +46,23 @@ fetch(SHEET_URL)
         // --------------------------------------------------
 
         // This allows comments to contain commas
-        // and line breaks without breaking the table.
+        // and line breaks.
 
         function parseCSV(csv) {
 
             const rows = [];
 
             let row = [];
+
             let value = "";
+
             let insideQuotes = false;
 
 
             for (let i = 0; i < csv.length; i++) {
 
                 const character = csv[i];
+
                 const nextCharacter = csv[i + 1];
 
 
@@ -155,7 +117,6 @@ fetch(SHEET_URL)
 
 
                     // Handle Windows-style line endings
-                    // (\r\n)
 
                     if (
                         character === "\r" &&
@@ -233,23 +194,25 @@ fetch(SHEET_URL)
 
 
         // --------------------------------------------------
-        // CREATE MARKERS
+        // CREATE A MARKER FOR EACH ROW
         // --------------------------------------------------
 
         rows.forEach(row => {
 
 
             // Column 1 = latitude
-            // Column 2 = longitude
 
             const latitude =
                 parseFloat(row[0]);
+
+
+            // Column 2 = longitude
 
             const longitude =
                 parseFloat(row[1]);
 
 
-            // Ignore rows without valid coordinates
+            // Skip rows without valid coordinates
 
             if (
                 !Number.isFinite(latitude) ||
@@ -266,16 +229,25 @@ fetch(SHEET_URL)
             }
 
 
-            // Get the other columns
+            // Column 3 = title
 
             const title =
                 row[2] || "";
 
+
+            // Column 4 = comment
+
             const comment =
                 row[3] || "";
 
+
+            // Column 5 = author
+
             const author =
                 row[4] || "";
+
+
+            // Column 6 = date
 
             const date =
                 row[5] || "";
@@ -335,7 +307,7 @@ fetch(SHEET_URL)
 
 
 // --------------------------------------------------
-// MAP CLICK
+// LISTEN FOR MAP CLICKS
 // --------------------------------------------------
 
 map.on("click", function (event) {
@@ -430,7 +402,7 @@ map.on("click", function (event) {
 
 
 // --------------------------------------------------
-// ADD PLACE BUTTON
+// LISTEN FOR THE "ADD PLACE" BUTTON
 // --------------------------------------------------
 
 document.addEventListener(
@@ -451,7 +423,7 @@ document.addEventListener(
 
 
         // --------------------------------------------------
-        // GET FORM INFORMATION
+        // GET INFORMATION FROM THE FORM
         // --------------------------------------------------
 
         const title =
@@ -459,10 +431,12 @@ document.addEventListener(
                 "place-name"
             ).value;
 
+
         const comment =
             document.getElementById(
                 "place-comment"
             ).value;
+
 
         const author =
             document.getElementById(
@@ -474,25 +448,20 @@ document.addEventListener(
         // GET COORDINATES
         // --------------------------------------------------
 
-        // Get the popup that is currently open.
-
         const popup = map._popup;
 
 
         const latitude =
             popup.getLatLng().lat;
 
+
         const longitude =
             popup.getLatLng().lng;
 
 
         // --------------------------------------------------
-        // CREATE FORM
+        // CREATE FORM FOR GOOGLE APPS SCRIPT
         // --------------------------------------------------
-
-        // We use a normal HTML form instead of fetch()
-        // because Google Apps Script can cause CORS problems
-        // when JavaScript tries to read its response.
 
         const form =
             document.createElement("form");
@@ -528,7 +497,7 @@ document.addEventListener(
 
 
         // --------------------------------------------------
-        // ADD DATA TO FORM
+        // ADD MEMORY INFORMATION
         // --------------------------------------------------
 
         addField(
@@ -536,20 +505,24 @@ document.addEventListener(
             latitude
         );
 
+
         addField(
             "longitude",
             longitude
         );
+
 
         addField(
             "title",
             title
         );
 
+
         addField(
             "comment",
             comment
         );
+
 
         addField(
             "author",
@@ -557,17 +530,8 @@ document.addEventListener(
         );
 
 
-        // IMPORTANT:
-        // Send the invitation code to Google Apps Script.
-
-        addField(
-            "code",
-            invitationCode
-        );
-
-
         // --------------------------------------------------
-        // SUBMIT FORM
+        // SEND THE FORM
         // --------------------------------------------------
 
         document.body.appendChild(form);
@@ -578,7 +542,7 @@ document.addEventListener(
 
 
         // --------------------------------------------------
-        // CLOSE FORM POPUP
+        // CLOSE THE FORM POPUP
         // --------------------------------------------------
 
         map.closePopup();
@@ -597,23 +561,19 @@ document.addEventListener(
 
             .setContent(
 
-                "<h3>Memory submitted 🌿</h3>" +
+                "<h3>Memory saved 🌿</h3>" +
 
                 "<p>" +
 
-                "Your memory has been submitted." +
+                "Your memory has been added." +
 
                 "</p>" +
 
-                "<p>" +
-
-                "<em>" +
+                "<p><em>" +
 
                 "Refresh the page to see it on the map." +
 
-                "</em>" +
-
-                "</p>"
+                "</em></p>"
 
             )
 
