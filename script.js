@@ -22,69 +22,78 @@ fetch(SHEET_URL)
     .then(response => response.text())
     .then(csv => {
 
-        // Parse the CSV correctly, including commas inside quoted fields
-        function parseCSV(csv) {
+        //commas and enter inside the comment part don't  mess it up
+       function parseCSV(csv) {
 
             const rows = [];
             let row = [];
             let value = "";
             let insideQuotes = false;
-
+        
             for (let i = 0; i < csv.length; i++) {
-
+        
                 const character = csv[i];
                 const nextCharacter = csv[i + 1];
-
-                // Two quotes inside a quoted field mean one actual quote
+        
+                // A pair of quotes inside a quoted field
+                // represents one quote character
                 if (character === '"' && insideQuotes && nextCharacter === '"') {
+        
                     value += '"';
                     i++;
                 }
-
-                // Start or end a quoted field
+        
+                // Start or end of a quoted field
                 else if (character === '"') {
+        
                     insideQuotes = !insideQuotes;
                 }
-
-                // Comma separates columns, but not inside quotes
+        
+                // Comma separates columns,
+                // unless we are inside quotation marks
                 else if (character === "," && !insideQuotes) {
+        
                     row.push(value);
                     value = "";
                 }
-
-                // New line separates rows
+        
+                // Newline separates rows,
+                // unless we are inside quotation marks
                 else if (
                     (character === "\n" || character === "\r") &&
                     !insideQuotes
                 ) {
-
+        
+                    // Handle Windows-style line endings: \r\n
                     if (character === "\r" && nextCharacter === "\n") {
                         i++;
                     }
-
+        
                     row.push(value);
                     value = "";
-
+        
                     // Ignore completely empty rows
                     if (row.some(cell => cell.trim() !== "")) {
                         rows.push(row);
                     }
-
+        
                     row = [];
                 }
-
+        
+                // Normal character
                 else {
+        
                     value += character;
                 }
             }
-
+        
             // Add the final row
             row.push(value);
-
+        
             if (row.some(cell => cell.trim() !== "")) {
                 rows.push(row);
             }
-
+        
             return rows;
         }
 
