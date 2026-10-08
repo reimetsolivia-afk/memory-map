@@ -116,6 +116,9 @@ document.addEventListener("click", function(event) {
         return;
     }
 
+
+    // Get information from the form
+
     const title =
         document.getElementById("place-name").value;
 
@@ -125,6 +128,9 @@ document.addEventListener("click", function(event) {
     const author =
         document.getElementById("place-author").value;
 
+
+    // Get the coordinates of the clicked location
+
     const popup = map._popup;
 
     const latitude =
@@ -133,6 +139,8 @@ document.addEventListener("click", function(event) {
     const longitude =
         popup.getLatLng().lng;
 
+
+    // Create the form that sends data to Google Apps Script
 
     const form = document.createElement("form");
 
@@ -166,7 +174,31 @@ document.addEventListener("click", function(event) {
 
     form.remove();
 
-    alert("Memory added!");
+
+    // Create the new marker immediately
+
+    const marker = L.marker([
+        latitude,
+        longitude
+    ]).addTo(map);
+
+
+    // Create the popup for the new marker
+
+    marker.bindPopup(
+        "<h3>" + title + "</h3>" +
+        "<p>" + comment + "</p>" +
+        "<p><em>Added by " + author + "</em></p>" +
+        "<small>Just now</small>"
+    );
+
+
+    // Show the new marker's popup
+
+    marker.openPopup();
+
+
+    // Close the original form popup
 
     map.closePopup();
 
