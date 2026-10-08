@@ -64,12 +64,17 @@ map.on("click", function(event) {
 
 });
 
+
+// Listen for clicks on the "Add place" button
+
 document.addEventListener("click", function(event) {
 
     if (event.target.id !== "add-place") {
         return;
     }
 
+
+    // Get the information from the form
 
     const title =
         document.getElementById("place-name").value;
@@ -81,7 +86,7 @@ document.addEventListener("click", function(event) {
         document.getElementById("place-author").value;
 
 
-    // Get the coordinates of the popup
+    // Get the coordinates from the popup
 
     const popup = map._popup;
 
@@ -92,7 +97,7 @@ document.addEventListener("click", function(event) {
         popup.getLatLng().lng;
 
 
-    // Create the data we want to send
+    // Create the URL parameters
 
     const parameters =
         "latitude=" + encodeURIComponent(latitude) +
@@ -104,20 +109,23 @@ document.addEventListener("click", function(event) {
 
     // Send the data to Google Apps Script
 
-      fetch(SCRIPT_URL + "?" + parameters, {
+    fetch(SCRIPT_URL + "?" + parameters, {
         mode: "no-cors"
     })
-    .then(() => {
-    
+    .then(function() {
+
         alert("Memory sent!");
-    
+
         map.closePopup();
-    
+
     })
-    .catch(error => {
-    
+    .catch(function(error) {
+
         console.error("Error:", error);
-    
+
         alert("Something went wrong.");
-    
+
     });
+
+});
+```
