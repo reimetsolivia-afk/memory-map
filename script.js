@@ -34,7 +34,7 @@ fetch(SHEET_URL)
             marker.bindPopup(
                 "<h3>" + title + "</h3>" +
                 "<p>" + comment + "</p>" +
-                "<p><em>Added by " + author + "</em></p>" +
+                "<p><em>— " + author + "</em></p>" +
                 "<small>" + date + "</small>"
             );
 
