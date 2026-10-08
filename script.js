@@ -19,69 +19,119 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 
 // Read the Google Sheet
-
+// Read the Google Sheet
 fetch(SHEET_URL)
     .then(response => response.text())
     .then(csv => {
 
-        const rows = csv.trim().split("\n");
+        // Parse the CSV correctly, including commas inside quoted fields
+        function parseCSV(csv) {
+
+            const rows = [];
+            let row = [];
+            let value = "";
+            let insideQuotes = false;
+
+            for (let i = 0; i < csv.length; i++) {
+
+                const character = csv[i];
+                const nextCharacter = csv[i + 1];
+
+                // Two quotes inside a quoted field mean one actual quote
+                if (character === '"' && insideQuotes && nextCharacter === '"') {
+                    value += '"';
+                    i++;
+                }
+
+                // Start or end a quoted field
+                else if (character === '"') {
+                    insideQuotes = !insideQuotes;
+                }
+
+                // Comma separates columns, but not inside quotes
+                else if (character === "," && !insideQuotes) {
+                    row.push(value);
+                    value = "";
+                }
+
+                // New line separates rows
+                else if (
+                    (character === "\n" || character === "\r") &&
+                    !insideQuotes
+                ) {
+
+                    if (character === "\r" && nextCharacter === "\n") {
+                        i++;
+                    }
+
+                    row.push(value);
+                    value = "";
+
+                    // Ignore completely empty rows
+                    if (row.some(cell => cell.trim() !== "")) {
+                        rows.push(row);
+                    }
+
+                    row = [];
+                }
+
+                else {
+                    value += character;
+                }
+            }
+
+            // Add the final row
+            row.push(value);
+
+            if (row.some(cell => cell.trim() !== "")) {
+                rows.push(row);
+            }
+
+            return rows;
+        }
+
+
+        const rows = parseCSV(csv);
 
         // Remove the header row
-
         rows.shift();
 
-
         // Create a marker for each row
-
         rows.forEach(row => {
-    
-        const values = row.split(",");
-    
-        const latitude = parseFloat(values[0]);
-        const longitude = parseFloat(values[1]);
-    
-    
-        // Skip rows that do not contain valid coordinates
-    
-        if (isNaN(latitude) || isNaN(longitude)) {
-            console.warn("Skipping invalid row:", row);
-            return;
-        }
-    
-    
-        const title = values[2] || "";
-        const comment = values[3] || "";
-        const author = values[4] || "";
-        const date = values[5] || "";
-    
-    
-        // Create marker
-    
-        const marker = L.marker([
-            latitude,
-            longitude
-        ]).addTo(map);
-    
-    
-        // Add popup
-    
-        marker.bindPopup(
-            "<h3>" + title + "</h3>" +
-            "<p>" + comment + "</p>" +
-            "<p><em>— " + author + "</em></p>" +
-            "<small>" + date + "</small>"
-        );
-    
-    });
+
+            const latitude = parseFloat(row[0]);
+            const longitude = parseFloat(row[1]);
+
+            // Skip rows without valid coordinates
+            if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+                console.warn("Skipping invalid row:", row);
+                return;
+            }
+
+            const title = row[2] || "";
+            const comment = row[3] || "";
+            const author = row[4] || "";
+            const date = row[5] || "";
+
+            // Create marker
+            const marker = L.marker([
+                latitude,
+                longitude
+            ]).addTo(map);
+
+            // Add popup
+            marker.bindPopup(
+                "<h3>" + title + "</h3>" +
+                "<p>" + comment + "</p>" +
+                "<p><em>— " + author + "</em></p>" +
+                "<small>" + date + "</small>"
+            );
+
+        });
 
     })
     .catch(error => {
-
-        console.error(
-            "Could not load Google Sheet:",
-            error
-        );
-
+        console.error("Could not load Google Sheet:", error);
     });
 
 
